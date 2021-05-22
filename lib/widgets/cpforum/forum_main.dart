@@ -144,6 +144,10 @@ class _CpForumMainState extends State<CpForumMain> {
                         padding: const EdgeInsets.all(10.0),
                         child: ElevatedButton(
                           onPressed: () {
+                            // Navigator.of(context)
+                            //     .push(MaterialPageRoute(builder: (_) {
+                            //   return MyPosts();
+                            // }));
                             Navigator.of(context)
                                 .push(MaterialPageRoute(builder: (_) {
                               return MyPosts();
