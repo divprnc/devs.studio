@@ -1,6 +1,6 @@
-# devloperstudio
+# developerstudio
 
-A new Flutter project.
+An application for coders to help to use forum and play quiz
 
 ## Getting Started
 
