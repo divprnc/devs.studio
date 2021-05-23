@@ -61,7 +61,7 @@ class _QuestionPostAndRepliesState extends State<QuestionPostAndReplies> {
     Widget codinghilighter(BuildContext context, String finalCode) {
       return Container(
         width: SizeConfig.safeBlockHorizontal * 95,
-        height: SizeConfig.safeBlockVertical * 45,
+        // height: SizeConfig.safeBlockVertical * 45,
         decoration: BoxDecoration(
             border: Border.all(
           color: Colors.blue,
@@ -177,47 +177,47 @@ class _QuestionPostAndRepliesState extends State<QuestionPostAndReplies> {
                                   )
                                 ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            rating = 1;
-                                            model.rateQuestion(
-                                                rating, userId, questionId);
-                                          });
-                                        },
-                                        child: rating == -1
-                                            ? Image.asset(
-                                                "assets/images/mark_useful.png")
-                                            : rating == 1
-                                                ? Image.asset(
-                                                    "assets/images/useful_marked.png")
-                                                : Image.asset(
-                                                    "assets/images/mark_useful.png")),
-                                    Text(
-                                        snapshot.data.get('Useful').toString()),
-                                    GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            rating = 0;
-                                            model.rateQuestion(
-                                                rating, userId, questionId);
-                                          });
-                                        },
-                                        child: rating == -1
-                                            ? Image.asset(
-                                                "assets/images/mark_not_useful.png")
-                                            : rating == 0
-                                                ? Image.asset(
-                                                    "assets/images/not_useful_marked.png")
-                                                : Image.asset(
-                                                    "assets/images/mark_not_useful.png")),
-                                  ],
-                                ),
-                              )
+                              // Padding(
+                              //   padding: const EdgeInsets.all(8.0),
+                              //   child: Column(
+                              //     children: [
+                              //       GestureDetector(
+                              //           onTap: () {
+                              //             setState(() {
+                              //               rating = 1;
+                              //               model.rateQuestion(
+                              //                   rating, userId, questionId);
+                              //             });
+                              //           },
+                              //           child: rating == -1
+                              //               ? Image.asset(
+                              //                   "assets/images/mark_useful.png")
+                              //               : rating == 1
+                              //                   ? Image.asset(
+                              //                       "assets/images/useful_marked.png")
+                              //                   : Image.asset(
+                              //                       "assets/images/mark_useful.png")),
+                              //       Text(
+                              //           snapshot.data.get('Useful').toString()),
+                              //       GestureDetector(
+                              //           onTap: () {
+                              //             setState(() {
+                              //               rating = 0;
+                              //               model.rateQuestion(
+                              //                   rating, userId, questionId);
+                              //             });
+                              //           },
+                              //           child: rating == -1
+                              //               ? Image.asset(
+                              //                   "assets/images/mark_not_useful.png")
+                              //               : rating == 0
+                              //                   ? Image.asset(
+                              //                       "assets/images/not_useful_marked.png")
+                              //                   : Image.asset(
+                              //                       "assets/images/mark_not_useful.png")),
+                              //     ],
+                              //   ),
+                              // )
                             ],
                           ),
                           Padding(

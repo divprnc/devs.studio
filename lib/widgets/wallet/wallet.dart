@@ -6,16 +6,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../../size_configuration.dart';
 import '../../theme.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class WalletPage extends StatefulWidget {
   @override
   _WalletPageState createState() => _WalletPageState();
 }
 
-class MessageDisplayer {
-  const MessageDisplayer(this.title);
-  final String title;
-}
 
 class _WalletPageState extends State<WalletPage> {
   String userId = "";
@@ -33,282 +30,17 @@ class _WalletPageState extends State<WalletPage> {
   void initState() {
     super.initState();
     loadData();
+        _razorpay = Razorpay();
+    // _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    // _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    // _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
   }
+  
+  Razorpay _razorpay;
 
-  final List<MessageDisplayer> _cast = <MessageDisplayer>[
-    const MessageDisplayer("We are not accepting wallet payments"),
-  ];
-  final List<MessageDisplayer> _cast1 = <MessageDisplayer>[
-    const MessageDisplayer("Please add your account details"),
-  ];
   bool isLoading = false;
   String addAmount = '', withdrawAmount = '';
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Iterable<Widget> get actorWidgets sync* {
-    for (final MessageDisplayer actor in _cast) {
-      yield Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Chip(
-          backgroundColor: Colors.blue[50],
-          label: Text(
-            actor.title,
-            style: TextStyle(fontFamily: "OpenSans", color: Colors.blue[900]),
-          ),
-          onDeleted: () {
-            setState(() {
-              _cast.removeWhere((MessageDisplayer entry) {
-                return entry.title == actor.title;
-              });
-            });
-          },
-        ),
-      );
-    }
-  }
-
-  Iterable<Widget> get actorWidgets1 sync* {
-    for (final MessageDisplayer actor in _cast1) {
-      yield Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Chip(
-          backgroundColor: Colors.blue[50],
-          label: Text(
-            actor.title,
-            style: TextStyle(fontFamily: "OpenSans", color: Colors.blue[900]),
-          ),
-          onDeleted: () {
-            setState(() {
-              _cast.removeWhere((MessageDisplayer entry) {
-                return entry.title == actor.title;
-              });
-            });
-          },
-        ),
-      );
-    }
-  }
-
-  Widget withdrawBalance(BuildContext context) {
-    return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        elevation: 40,
-        child: Container(
-          width: SizeConfig.safeBlockHorizontal * 100,
-          height: SizeConfig.safeBlockVertical * 28,
-          child: Column(
-            children: [
-              Wrap(
-                children: actorWidgets1.toList(),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Container(
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) {
-                            setState(() {
-                              addAmount = value;
-                            });
-                          },
-                          validator: (balance) {
-                            if (int.parse(balance) < 10) {
-                              return 'Please withdraw minimum 10 Rupees';
-                            }
-                            return null;
-                          },
-                          cursorHeight: 20,
-                          decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
-                              ),
-                              contentPadding: EdgeInsets.only(left: 10),
-                              hintText: "Amount",
-                              hintStyle: textFieldSize),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            width: SizeConfig.safeBlockHorizontal * 30,
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(3),
-                            ),
-                            child: ElevatedButton(
-                              child: isLoading
-                                  ? SpinKitRing(
-                                      color: Colors.white,
-                                      lineWidth: 4,
-                                      size: 40,
-                                    )
-                                  : Text(
-                                      "Withdraw",
-                                      style: normalTextWhite,
-                                    ),
-                              onPressed: () async {
-                                if (_formKey.currentState.validate()) {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                }
-                              },
-                            ),
-                          ),
-                          Container(
-                            height: SizeConfig.safeBlockVertical * 6,
-                            width: SizeConfig.safeBlockHorizontal * 30,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: Colors.red),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                "Cancel",
-                                style: TextStyle(
-                                    color: Colors.red, fontFamily: "OpenSans"),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ));
-  }
-
-  Widget addBalance(BuildContext context) {
-    return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        elevation: 40,
-        child: Container(
-          width: SizeConfig.safeBlockHorizontal * 100,
-          height: SizeConfig.safeBlockVertical * 28,
-          child: Column(
-            children: [
-              Wrap(
-                children: actorWidgets.toList(),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Container(
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) {
-                            setState(() {
-                              addAmount = value;
-                            });
-                          },
-                          validator: (balance) {
-                            if (int.parse(balance) < 10) {
-                              return 'Please add minimum 10 Rupees';
-                            }
-                            return null;
-                          },
-                          cursorHeight: 20,
-                          decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
-                              ),
-                              contentPadding: EdgeInsets.only(left: 10),
-                              hintText: "Amount",
-                              hintStyle: textFieldSize),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            width: SizeConfig.safeBlockHorizontal * 30,
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(3),
-                            ),
-                            child: ElevatedButton(
-                              child: isLoading
-                                  ? SpinKitRing(
-                                      color: Colors.white,
-                                      lineWidth: 4,
-                                      size: 40,
-                                    )
-                                  : Text(
-                                      "Add",
-                                      style: normalTextWhite,
-                                    ),
-                              onPressed: () async {
-                                if (_formKey.currentState.validate()) {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                }
-                              },
-                            ),
-                          ),
-                          Container(
-                            height: SizeConfig.safeBlockVertical * 6,
-                            width: SizeConfig.safeBlockHorizontal * 30,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: Colors.red),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                "Cancel",
-                                style: TextStyle(
-                                    color: Colors.red, fontFamily: "OpenSans"),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -409,173 +141,6 @@ class _WalletPageState extends State<WalletPage> {
                                           ),
                                           onPressed: () {
                                             showMaterialModalBottomSheet(
-                                              bounce: true,
-                                              animationCurve: Curves.bounceIn,
-                                              elevation: 10,
-                                              enableDrag: true,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(15),
-                                                  topRight: Radius.circular(15),
-                                                ),
-                                              ),
-                                              context: context,
-                                              builder: (context) => Container(
-                                                height: SizeConfig
-                                                        .safeBlockVertical *
-                                                    50,
-                                                child: Container(
-                                                  width: SizeConfig
-                                                          .safeBlockHorizontal *
-                                                      100,
-                                                  height: SizeConfig
-                                                          .safeBlockVertical *
-                                                      28,
-                                                  child: Column(
-                                                    children: [
-                                                      Wrap(
-                                                        children: actorWidgets
-                                                            .toList(),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Form(
-                                                          key: _formKey,
-                                                          child: Column(
-                                                            children: [
-                                                              Container(
-                                                                width: SizeConfig
-                                                                        .screenWidth *
-                                                                    0.9,
-                                                                height: SizeConfig
-                                                                        .screenHeight *
-                                                                    0.06,
-                                                                child:
-                                                                    TextFormField(
-                                                                  keyboardType:
-                                                                      TextInputType
-                                                                          .number,
-                                                                  onChanged:
-                                                                      (value) {
-                                                                    setState(
-                                                                        () {
-                                                                      addAmount =
-                                                                          value;
-                                                                    });
-                                                                  },
-                                                                  validator:
-                                                                      (balance) {
-                                                                    if (int.parse(
-                                                                            balance) <
-                                                                        10) {
-                                                                      return 'Please add minimum 10 Rupees';
-                                                                    }
-                                                                    return null;
-                                                                  },
-                                                                  cursorHeight:
-                                                                      20,
-                                                                  decoration:
-                                                                      InputDecoration(
-                                                                          enabledBorder:
-                                                                              OutlineInputBorder(
-                                                                            borderSide:
-                                                                                BorderSide(color: Colors.grey),
-                                                                          ),
-                                                                          focusedBorder:
-                                                                              OutlineInputBorder(
-                                                                            borderSide:
-                                                                                BorderSide(color: Colors.blue),
-                                                                          ),
-                                                                          contentPadding: EdgeInsets.only(
-                                                                              left:
-                                                                                  10),
-                                                                          hintText:
-                                                                              "Amount",
-                                                                          hintStyle:
-                                                                              textFieldSize),
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height: 20,
-                                                              ),
-                                                              Container(
-                                                                width: SizeConfig
-                                                                        .screenWidth *
-                                                                    0.9,
-                                                                height: SizeConfig
-                                                                        .screenHeight *
-                                                                    0.06,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  color: Colors
-                                                                      .blue,
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              3),
-                                                                ),
-                                                                child:
-                                                                    ElevatedButton(
-                                                                  child: isLoading
-                                                                      ? SpinKitRing(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          lineWidth:
-                                                                              4,
-                                                                          size:
-                                                                              40,
-                                                                        )
-                                                                      : Text(
-                                                                          "Add",
-                                                                          style:
-                                                                              normalTextWhite,
-                                                                        ),
-                                                                  onPressed:
-                                                                      () async {
-                                                                    if (_formKey
-                                                                        .currentState
-                                                                        .validate()) {
-                                                                      setState(
-                                                                          () {
-                                                                        isLoading =
-                                                                            true;
-                                                                      });
-
-                                                                      setState(
-                                                                          () {
-                                                                        isLoading =
-                                                                            false;
-                                                                      });
-                                                                    }
-                                                                  },
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          child: Text(
-                                            "Add Amount",
-                                            style: profileTextWhite,
-                                          ),
-                                        ),
-                                        Container(
-                                          width: SizeConfig.screenWidth * 0.3,
-                                          child: OutlinedButton(
-                                            style: OutlinedButton.styleFrom(
-                                              side: BorderSide(
-                                                  color: Colors.white),
-                                            ),
-                                            onPressed: () {
-                                              showMaterialModalBottomSheet(
                                                 bounce: true,
                                                 animationCurve: Curves.bounceIn,
                                                 elevation: 10,
@@ -591,138 +156,255 @@ class _WalletPageState extends State<WalletPage> {
                                                 ),
                                                 context: context,
                                                 builder: (context) => Container(
-                                                  height: SizeConfig
-                                                          .safeBlockVertical *
-                                                      50,
-                                                  child: Container(
-                                                    width: SizeConfig
-                                                            .safeBlockHorizontal *
-                                                        100,
-                                                    height: SizeConfig
-                                                            .safeBlockVertical *
-                                                        28,
-                                                    child: Column(
-                                                      children: [
-                                                        Wrap(
-                                                          children: actorWidgets
-                                                              .toList(),
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Form(
-                                                            key: _formKey,
+                                                      // height: SizeConfig
+                                                      //         .safeBlockVertical *
+                                                      //     60,
+                                                      child: Column(
+                                                        children: [
+                                                          Icon(Icons
+                                                              .calendar_view_day_rounded),
+                                                          SizedBox(
+                                                            height: 20,
+                                                          ),
+                                                          Text(
+                                                            "Add Amount",
+                                                            style: TextStyle(
+                                                                fontFamily:
+                                                                    "OpenSans",
+                                                                fontSize: 17,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          ),
+                                                          Container(
+                                                            // width: SizeConfig.safeBlockHorizontal *
+                                                            //     100,
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Form(
+                                                                key: _formKey,
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      "Enter Amount to Add in the Wallet",
+                                                                      style: TextStyle(
+                                                                          fontFamily:
+                                                                              "OpenSans",
+                                                                          fontSize:
+                                                                              17,
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: 5,
+                                                                    ),
+                                                                    TextFormField(
+                                                                        onChanged:
+                                                                            (value) {
+                                                                          setState(
+                                                                              () {
+                                                                            addAmount =
+                                                                                value;
+                                                                          });
+                                                                        },
+                                                                        validator:
+                                                                            (balance) {
+                                                                          if (int.parse(balance) <
+                                                                              10) {
+                                                                            return 'Minimum Amount Should be 10';
+                                                                          }
+                                                                          return null;
+                                                                        },
+                                                                        cursorHeight:
+                                                                            20,
+                                                                        decoration: InputDecoration(
+                                                                            enabledBorder: OutlineInputBorder(
+                                                                              borderSide: BorderSide(color: Colors.grey),
+                                                                            ),
+                                                                            focusedBorder: OutlineInputBorder(
+                                                                              borderSide: BorderSide(color: Colors.blue),
+                                                                            ),
+                                                                            contentPadding: EdgeInsets.only(left: 10),
+                                                                            hintText: "Amount",
+                                                                            hintStyle: textFieldSize)),
+                                                                    Container(
+                                                                      width: SizeConfig
+                                                                              .blockSizeHorizontal *
+                                                                          100,
+                                                                      child:
+                                                                          ElevatedButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          if (_formKey
+                                                                              .currentState
+                                                                              .validate()) {
+                                                                            setState(() {
+                                                                              isLoading = true;
+                                                                            });
+                                                                            // Navigator.of(context)
+                                                                            //     .pop();
+                                                                            setState(() {
+                                                                              isLoading = false;
+                                                                            });
+                                                                          }
+                                                                        },
+                                                                        child:
+                                                                            Text(
+                                                                          "Add Amount",
+                                                                          style: TextStyle(
+                                                                              fontFamily: "OpenSans",
+                                                                              fontSize: 17,
+                                                                              fontWeight: FontWeight.bold),
+                                                                        ),
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ));
+                                          },
+                                          child: Text(
+                                            "Add Amount",
+                                            style: profileTextWhite,
+                                          ),
+                                        ),
+                                        Container(
+                                          width: SizeConfig.screenWidth * 0.3,
+                                          child: OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              side: BorderSide(
+                                                  color: Colors.white),
+                                            ),
+                                            onPressed: () {
+                                              showMaterialModalBottomSheet(
+                                                  bounce: true,
+                                                  animationCurve:
+                                                      Curves.bounceIn,
+                                                  elevation: 10,
+                                                  enableDrag: true,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                      topLeft:
+                                                          Radius.circular(15),
+                                                      topRight:
+                                                          Radius.circular(15),
+                                                    ),
+                                                  ),
+                                                  context: context,
+                                                  builder:
+                                                      (context) => Container(
+                                                            // height: SizeConfig
+                                                            //         .safeBlockVertical *
+                                                            //     60,
                                                             child: Column(
                                                               children: [
-                                                                Container(
-                                                                  width: SizeConfig
-                                                                          .screenWidth *
-                                                                      0.9,
-                                                                  height: SizeConfig
-                                                                          .screenHeight *
-                                                                      0.06,
-                                                                  child:
-                                                                      TextFormField(
-                                                                    keyboardType:
-                                                                        TextInputType
-                                                                            .number,
-                                                                    onChanged:
-                                                                        (value) {
-                                                                      setState(
-                                                                          () {
-                                                                        addAmount =
-                                                                            value;
-                                                                      });
-                                                                    },
-                                                                    validator:
-                                                                        (balance) {
-                                                                      if (int.parse(
-                                                                              balance) <
-                                                                          10) {
-                                                                        return 'Please add minimum 10 Rupees';
-                                                                      }
-                                                                      return null;
-                                                                    },
-                                                                    cursorHeight:
-                                                                        20,
-                                                                    decoration: InputDecoration(
-                                                                        enabledBorder: OutlineInputBorder(
-                                                                          borderSide:
-                                                                              BorderSide(color: Colors.grey),
-                                                                        ),
-                                                                        focusedBorder: OutlineInputBorder(
-                                                                          borderSide:
-                                                                              BorderSide(color: Colors.blue),
-                                                                        ),
-                                                                        contentPadding: EdgeInsets.only(left: 10),
-                                                                        hintText: "Amount",
-                                                                        hintStyle: textFieldSize),
-                                                                  ),
-                                                                ),
+                                                                Icon(Icons
+                                                                    .calendar_view_day_rounded),
                                                                 SizedBox(
                                                                   height: 20,
                                                                 ),
+                                                                Text(
+                                                                  "Withdraw Amount",
+                                                                  style: TextStyle(
+                                                                      fontFamily:
+                                                                          "OpenSans",
+                                                                      fontSize:
+                                                                          17,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                ),
                                                                 Container(
-                                                                  width: SizeConfig
-                                                                          .screenWidth *
-                                                                      0.9,
-                                                                  height: SizeConfig
-                                                                          .screenHeight *
-                                                                      0.06,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    color: Colors
-                                                                        .blue,
-                                                                    borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(3),
-                                                                  ),
+                                                                  // width: SizeConfig.safeBlockHorizontal *
+                                                                  //     100,
                                                                   child:
-                                                                      ElevatedButton(
-                                                                    child: isLoading
-                                                                        ? SpinKitRing(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            lineWidth:
-                                                                                4,
-                                                                            size:
-                                                                                40,
-                                                                          )
-                                                                        : Text(
-                                                                            "Add",
-                                                                            style:
-                                                                                normalTextWhite,
+                                                                      Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child: Form(
+                                                                      key:
+                                                                          _formKey,
+                                                                      child:
+                                                                          Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text(
+                                                                            "Enter Amount to withdraw",
+                                                                            style: TextStyle(
+                                                                                fontFamily: "OpenSans",
+                                                                                fontSize: 17,
+                                                                                fontWeight: FontWeight.bold),
                                                                           ),
-                                                                    onPressed:
-                                                                        () async {
-                                                                      if (_formKey
-                                                                          .currentState
-                                                                          .validate()) {
-                                                                        setState(
-                                                                            () {
-                                                                          isLoading =
-                                                                              true;
-                                                                        });
-
-                                                                        setState(
-                                                                            () {
-                                                                          isLoading =
-                                                                              false;
-                                                                        });
-                                                                      }
-                                                                    },
+                                                                          SizedBox(
+                                                                            height:
+                                                                                5,
+                                                                          ),
+                                                                          TextFormField(
+                                                                              onChanged: (value) {
+                                                                                setState(() {
+                                                                                  addAmount = value;
+                                                                                });
+                                                                              },
+                                                                              validator: (balance) {
+                                                                                if (int.parse(balance) < 10) {
+                                                                                  return 'Minimum Amount Should be 10';
+                                                                                }
+                                                                                return null;
+                                                                              },
+                                                                              cursorHeight: 20,
+                                                                              decoration: InputDecoration(
+                                                                                  enabledBorder: OutlineInputBorder(
+                                                                                    borderSide: BorderSide(color: Colors.grey),
+                                                                                  ),
+                                                                                  focusedBorder: OutlineInputBorder(
+                                                                                    borderSide: BorderSide(color: Colors.blue),
+                                                                                  ),
+                                                                                  contentPadding: EdgeInsets.only(left: 10),
+                                                                                  hintText: "Amount",
+                                                                                  hintStyle: textFieldSize)),
+                                                                          Container(
+                                                                            width:
+                                                                                SizeConfig.blockSizeHorizontal * 100,
+                                                                            child:
+                                                                                ElevatedButton(
+                                                                              onPressed: () {
+                                                                                if (_formKey.currentState.validate()) {
+                                                                                  setState(() {
+                                                                                    isLoading = true;
+                                                                                  });
+                                                                                  // Navigator.of(context)
+                                                                                  //     .pop();
+                                                                                  setState(() {
+                                                                                    isLoading = false;
+                                                                                  });
+                                                                                }
+                                                                              },
+                                                                              child: Text(
+                                                                                "Withdraw",
+                                                                                style: TextStyle(fontFamily: "OpenSans", fontSize: 17, fontWeight: FontWeight.bold),
+                                                                              ),
+                                                                            ),
+                                                                          )
+                                                                        ],
+                                                                      ),
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ],
                                                             ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
+                                                          ));
                                               // showDialog(
                                               //     context: context,
                                               //     builder:

@@ -18,7 +18,7 @@ class LoginModel {
       "Email": user.email.toString(),
       "FullName": user.displayName.toString(),
       "WalletAmount": 0,
-      "TotalPosts": [],
+      "TotalPosts": 0,
       "AccountData": {
         "AccountNumber": "",
         "AccountOwnerName": "",

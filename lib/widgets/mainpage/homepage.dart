@@ -3,11 +3,11 @@ import 'package:devloperstudio/theme.dart';
 import 'package:devloperstudio/widgets/cpquestions/cpquestions_main.dart';
 import 'package:devloperstudio/widgets/jobsportal/jobsmain.dart';
 import 'package:devloperstudio/widgets/mycontests/myContest.dart';
-import 'package:devloperstudio/widgets/settings/settings.dart';
+// import 'package:devloperstudio/widgets/settings/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:devloperstudio/widgets/cpnotes/cp_main.dart';
+// import 'package:devloperstudio/widgets/cpnotes/cp_main.dart';
 import 'package:devloperstudio/widgets/cpforum/forum_main.dart';
-import 'package:devloperstudio/widgets/ebooks/ebook_main.dart';
+// import 'package:devloperstudio/widgets/ebooks/ebook_main.dart';
 import 'package:devloperstudio/widgets/leaderboard/leaderboard.dart';
 import 'package:devloperstudio/widgets/livecontests/live_contest_mainPage.dart';
 import 'package:devloperstudio/widgets/mainpage/main_home.dart';
@@ -16,6 +16,7 @@ import 'package:devloperstudio/widgets/profile/profile_page.dart';
 import 'package:devloperstudio/widgets/wallet/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:devloperstudio/widgets/authorization/loginModel.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -232,11 +233,23 @@ class _HomePageState extends State<HomePage> {
                   //     return EbookMainPage();
                   //   }));
                   // }),
-                  drawerMenu("Comptetive Programming", coding, () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-                      return CpMainPage();
-                    }));
+                  drawerMenu(
+                      "Contacts",
+                      Icon(
+                        Icons.email_outlined,
+                        color: Colors.blue,
+                      ), () {
+                    final Email email = Email(
+                      recipients: ['devloper.studio44@gmail.com'],
+                    );
+                    FlutterEmailSender.send(email)
+                        .then((value) => print("Email Sended"));
                   }),
+                  // drawerMenu("Comptetive Programming", coding, () {
+                  //   Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+                  //     return CpMainPage();
+                  //   }));
+                  // }),
                   drawerMenu(
                       "Cp Questions",
                       Icon(

@@ -52,29 +52,28 @@ class _CpQuestionsMainPageState extends State<CpQuestionsMainPage> {
           elevation: 10,
           title: appLogo,
         ),
-        body: SingleChildScrollView(
-          physics:
-              BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-          child: StreamBuilder<QuerySnapshot>(
-            stream: quizes.snapshots(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasError) {
-                Fluttertoast.showToast(
-                    msg: "Something went wrong",
-                    toastLength: Toast.LENGTH_LONG);
-              }
+        body: StreamBuilder<QuerySnapshot>(
+          stream: quizes.snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              Fluttertoast.showToast(
+                  msg: "Something went wrong", toastLength: Toast.LENGTH_LONG);
+            }
 
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: SpinKitRing(
-                    color: Colors.blue,
-                    lineWidth: 4,
-                    size: 40,
-                  ),
-                );
-              }
-              return Column(
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: SpinKitRing(
+                  color: Colors.blue,
+                  lineWidth: 4,
+                  size: 40,
+                ),
+              );
+            }
+            return SingleChildScrollView(
+              physics: BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
@@ -101,8 +100,17 @@ class _CpQuestionsMainPageState extends State<CpQuestionsMainPage> {
                         GestureDetector(
                       onTap: () {
                         String s = snapshot.data.docs[index].id;
+                        List easy = snapshot.data.docs[index]["Easy"];
+                        List medium = snapshot.data.docs[index]["Medium"];
+                        List hard = snapshot.data.docs[index]["Hard"];
+                        print(easy);
                         Navigator.of(context).pushNamed('/cpquestionslist',
-                            arguments: {'topicName': s});
+                            arguments: {
+                              'topicName': s,
+                              'easy': easy,
+                              'medium': medium,
+                              'hard': hard
+                            });
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(
@@ -120,7 +128,7 @@ class _CpQuestionsMainPageState extends State<CpQuestionsMainPage> {
                                   radius: 30,
                                   child: Center(
                                     child: Text(
-                                      "${cpData[index][0]}",
+                                      "${snapshot.data.docs[index].id[0]}",
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontFamily: "OpenSans",
@@ -147,9 +155,9 @@ class _CpQuestionsMainPageState extends State<CpQuestionsMainPage> {
                     ),
                   ),
                 ],
-              );
-            },
-          ),
+              ),
+            );
+          },
         ));
   }
 }
